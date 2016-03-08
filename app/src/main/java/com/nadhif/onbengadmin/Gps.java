@@ -141,6 +141,7 @@ public class Gps implements LocationListener {
         alertDialog.setTitle("Information");
         alertDialog.setMessage("Some features are unavailable because Location Services are turned off. To turn on Location Services, open Setting.");
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -148,7 +149,17 @@ public class Gps implements LocationListener {
             }
         });
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Activity activity = (Activity) context;
+                activity.finish();
+            }
+        });
+        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
                 dialog.dismiss();
                 Activity activity = (Activity) context;
                 activity.finish();
