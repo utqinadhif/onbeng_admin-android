@@ -25,6 +25,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
     Location lc;
     Uri uri;
     Ringtone ringtone;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,12 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Pick Location");
 
+        intent = getIntent();
+        String name = intent.getStringExtra("name");
+        if (name != null) {
+            getSupportActionBar().setSubtitle("For " + name);
+        }
+
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         latlng = (TextView) findViewById(R.id.latlng);
         status = (TextView) findViewById(R.id.status);
@@ -46,7 +53,6 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
         start = true;
 
         exgps = new ExGps(this);
-        cekGps();
 
         try {
             uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -57,6 +63,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
     }
 
     public void cekGps() {
+        exgps.getLocation();
         if (!exgps.canGetLocation()) {
             exgps.showSettingsAlert();
         }
@@ -65,7 +72,8 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        exgps.getLocation();
+
+        this.cekGps();
     }
 
     @Override
@@ -134,6 +142,11 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
                 exgps.useNetwork();
                 exgps.useGPS();
             }
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            exgps.getLocation();
         }
     }
 }

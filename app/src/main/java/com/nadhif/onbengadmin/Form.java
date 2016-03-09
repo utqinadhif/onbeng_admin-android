@@ -15,6 +15,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     ScrollView scroll_form;
     Button saveNow;
     EditText name, company, contact, email, location, price, latlng;
+    Intent intent, intents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +44,11 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         saveNow = (Button) findViewById(R.id.saveNow);
         saveNow.setOnClickListener(this);
 
-
-        Intent intent = getIntent();
+        intent = getIntent();
         String id = intent.getStringExtra("id");
         if (id != null) {
-            getSupportActionBar().setTitle("Edit data " + id);
+            getSupportActionBar().setTitle("Edit data");
+            getSupportActionBar().setSubtitle(id);
             name.setText(intent.getStringExtra("name"));
             company.setText(intent.getStringExtra("company"));
             contact.setText(intent.getStringExtra("contact"));
@@ -90,8 +91,9 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
 
     private void addData() {
         Helper.hideSoftKeyboard(this);
-        Intent intent = new Intent(this, Pick.class);
-        startActivityForResult(intent, 1);
+        intents = new Intent(this, Pick.class);
+        intents.putExtra("name", intent.getStringExtra("name"));
+        startActivityForResult(intents, 1);
     }
 
     @Override

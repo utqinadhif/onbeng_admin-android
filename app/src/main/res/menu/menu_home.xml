@@ -5,11 +5,13 @@
     <item
         android:id="@+id/sound"
         android:checkable="true"
-        android:title="@string/sound" />
+        android:title="@string/sound"
+        app:showAsAction="never" />
     <item
         android:id="@+id/vibrate"
         android:checkable="true"
-        android:title="@string/vibrate" />
+        android:title="@string/vibrate"
+        app:showAsAction="never" />
     <item
         android:id="@+id/exit"
         android:title="@string/exit"

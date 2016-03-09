@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     SwipeRefreshLayout swiper;
+    ProgressBar progressBar;
 
     ArrayList<Data> datas = new ArrayList<>();
     ContentValues cv;
@@ -57,6 +59,9 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         swiper.setColorSchemeResources(R.color.white);
         swiper.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorAccent));
         swiper.setOnRefreshListener(this);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
 
         cv = new ContentValues();
         cv.put("beo", "038");
@@ -144,6 +149,9 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                 swiper.setVisibility(View.VISIBLE);
             }
             swiper.setRefreshing(true);
+            if (first) {
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
@@ -152,6 +160,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
             try {
                 JSONObject json = new JSONObject(s);
                 if (json.getString("ok").equals("1")) {
+                    progressBar.setVisibility(View.GONE);
                     if (refresh || first) {
                         datas.clear();
                         adapter.notifyDataSetChanged();
