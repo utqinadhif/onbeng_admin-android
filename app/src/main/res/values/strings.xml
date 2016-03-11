@@ -15,4 +15,7 @@
     <string name="bengkel_save">Save Now</string>
     <string name="pick_on">Pick Now</string>
     <string name="pick_off">Please waiting . . .</string>
+
+    <string name="API_KEY">AIzaSyDupGnLls2KDaJYVWP6ykyexfl-ys7-Eik</string>
+    <string name="delete">Delete</string>
 </resources>

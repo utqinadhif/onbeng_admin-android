@@ -1,9 +1,14 @@
 package com.nadhif.onbengadmin;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import java.io.Serializable;
 
 /**
  * Created by nadhif on 06/03/2016.

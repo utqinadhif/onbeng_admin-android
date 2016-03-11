@@ -1,17 +1,22 @@
 package com.nadhif.onbengadmin;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 public class Form extends AppCompatActivity implements View.OnFocusChangeListener, View.OnClickListener {
     ScrollView scroll_form;
@@ -19,6 +24,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     EditText name, company, contact, email, location, price, latlng;
     Intent intent, intents;
     ContentValues cv;
+    String p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +43,9 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         contact = (EditText) findViewById(R.id.contact);
         email = (EditText) findViewById(R.id.email);
         location = (EditText) findViewById(R.id.location);
+        location.setOnClickListener(this);
+        location.setOnFocusChangeListener(this);
         price = (EditText) findViewById(R.id.price);
-
 
         latlng = (EditText) findViewById(R.id.latlng);
         latlng.setOnFocusChangeListener(this);
@@ -63,6 +70,8 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
             location.setText(intent.getStringExtra("location"));
             price.setText(intent.getStringExtra("price"));
             latlng.setText(intent.getStringExtra("lat") + ", " + intent.getStringExtra("lng"));
+            latlng.setTag(R.string.pick_off, intent.getStringExtra("lat"));
+            latlng.setTag(R.string.pick_on, intent.getStringExtra("lng"));
             saveNow.setText("Update Now");
             saveNow.setTag(1);
         } else {
@@ -70,14 +79,40 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
             saveNow.setText("Save Now");
             saveNow.setTag(2);
         }
+
+        p = String.valueOf(saveNow.getTag());
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.delete);
+        if(p.equals("1")){
+//            update
+            menuItem.setVisible(true);
+        }else{
+//            save
+            menuItem.setVisible(false);
+        }
+        return  true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_delete, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.delete:
+                cv.put("id_marker", name.getTag().toString());
+                new Post(this, Helper.url + "marker/deleteMarker", cv).execute();
+                break;
             case android.R.id.home:
                 onBackPressed();
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -85,8 +120,15 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
+            if (resultCode == RESULT_OK) {
                 latlng.setText(data.getStringExtra("lat") + ", " + data.getStringExtra("lng"));
+                latlng.setTag(R.string.pick_off, data.getStringExtra("lat"));
+                latlng.setTag(R.string.pick_on, data.getStringExtra("lng"));
+            }
+        } else if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                location.setText(place.getName());
             }
         }
     }
@@ -95,7 +137,23 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     public void onFocusChange(View v, boolean hasFocus) {
         if (v == latlng && hasFocus) {
             addData();
+        } else if (v == location && hasFocus) {
+            searchLocation();
         }
+    }
+
+    private void searchLocation() {
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .build(this);
+            startActivityForResult(intent, 2);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+
     }
 
     private void addData() {
@@ -111,6 +169,9 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
             case R.id.latlng:
                 addData();
                 break;
+            case R.id.location:
+                searchLocation();
+                break;
             case R.id.saveNow:
                 Helper.hideSoftKeyboard(this);
                 cv.put("name", name.getText().toString());
@@ -120,7 +181,6 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
                 cv.put("location", location.getText().toString());
                 cv.put("price", price.getText().toString());
                 cv.put("latlng", "(" + latlng.getText().toString() + ")");
-                String p = String.valueOf(saveNow.getTag());
                 String add;
                 if (p.equals("1")) {
                     // update
@@ -147,6 +207,19 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         @Override
         protected void onPostExecute(String s) {
             pg.dismiss();
+            if (p.equals("1")) {
+                // update
+//                Holder.name.setText(name.getText().toString());
+//                Holder.company.setText(company.getText().toString());
+//                Holder.contact.setText(contact.getText().toString());
+//                Holder.email.setText(email.getText().toString());
+//                Holder.location.setText(location.getText().toString());
+//                Holder.price.setText(price.getText().toString());
+//                Holder.latlng.setText(latlng.getText().toString());
+            } else {
+                // save
+
+            }
             finish();
         }
     }

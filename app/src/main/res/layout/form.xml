@@ -104,6 +104,7 @@
                             android:layout_height="wrap_content"
                             android:drawableLeft="@android:drawable/checkbox_on_background"
                             android:drawablePadding="@dimen/five"
+                            android:editable="false"
                             android:hint="@string/bengkel_location"
                             android:inputType="text"
                             android:maxLines="1" />
