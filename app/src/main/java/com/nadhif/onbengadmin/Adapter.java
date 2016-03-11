@@ -65,7 +65,7 @@ public class Adapter extends RecyclerView.Adapter {
         if (holder instanceof Holder) {
             Data data = datas.get(position);
             ((Holder) holder).name.setText(data.getBengkel_name());
-            ((Holder) holder).name.setTag(data.getBengkel_name());
+            ((Holder) holder).name.setTag(data.getBengkel_id_marker());
             ((Holder) holder).company.setText(data.getBengkel_company());
             ((Holder) holder).contact.setText(data.getContact());
             ((Holder) holder).email.setText(data.getEmail());

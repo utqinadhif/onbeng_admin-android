@@ -32,7 +32,7 @@ public class Holder extends RecyclerView.ViewHolder implements View.OnClickListe
     public void onClick(View v) {
         if (v == view) {
             Intent intent = new Intent(view.getContext(), Form.class);
-            intent.putExtra("id", name.getTag().toString());
+            intent.putExtra("id_marker", name.getTag().toString());
             intent.putExtra("name", name.getText().toString());
             intent.putExtra("company", company.getText().toString());
             intent.putExtra("contact", contact.getText().toString());

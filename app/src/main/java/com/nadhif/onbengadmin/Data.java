@@ -4,10 +4,10 @@ package com.nadhif.onbengadmin;
  * Created by nadhif on 29/02/2016.
  */
 public class Data {
-    String id, bengkel_name, bengkel_company, contact, email, location, price_per_km, lat, lng;
+    String id_marker, bengkel_name, bengkel_company, contact, email, location, price_per_km, lat, lng;
 
-    public Data(String id, String bengkel_name, String bengkel_company, String contact, String email, String location, String price_per_km, String lat, String lng) {
-        this.id = id;
+    public Data(String id_marker, String bengkel_name, String bengkel_company, String contact, String email, String location, String price_per_km, String lat, String lng) {
+        this.id_marker = id_marker;
         this.bengkel_name = bengkel_name;
         this.bengkel_company = bengkel_company;
         this.contact = contact;
@@ -18,8 +18,8 @@ public class Data {
         this.lng = lng;
     }
 
-    public String getBengkel_id() {
-        return id;
+    public String getBengkel_id_marker() {
+        return id_marker;
     }
 
     public String getBengkel_name() {

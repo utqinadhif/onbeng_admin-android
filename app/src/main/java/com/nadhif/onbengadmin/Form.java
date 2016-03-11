@@ -1,6 +1,8 @@
 package com.nadhif.onbengadmin;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     Button saveNow;
     EditText name, company, contact, email, location, price, latlng;
     Intent intent, intents;
+    ContentValues cv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,22 +47,28 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         saveNow = (Button) findViewById(R.id.saveNow);
         saveNow.setOnClickListener(this);
 
+        cv = new ContentValues();
+        cv.put("token", Helper.getSP(this, "key"));
+
         intent = getIntent();
-        String id = intent.getStringExtra("id");
+        String id = intent.getStringExtra("id_marker");
         if (id != null) {
             getSupportActionBar().setTitle("Edit data");
             getSupportActionBar().setSubtitle(id);
             name.setText(intent.getStringExtra("name"));
+            name.setTag(intent.getStringExtra("id_marker"));
             company.setText(intent.getStringExtra("company"));
             contact.setText(intent.getStringExtra("contact"));
             email.setText(intent.getStringExtra("email"));
             location.setText(intent.getStringExtra("location"));
             price.setText(intent.getStringExtra("price"));
-            latlng.setText(intent.getStringExtra("lat") + "," + intent.getStringExtra("lng"));
+            latlng.setText(intent.getStringExtra("lat") + ", " + intent.getStringExtra("lng"));
             saveNow.setText("Update Now");
+            saveNow.setTag(1);
         } else {
             getSupportActionBar().setTitle("Add New Data");
             saveNow.setText("Save Now");
+            saveNow.setTag(2);
         }
     }
 
@@ -77,7 +86,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                latlng.setText(data.getStringExtra("lat") + "," + data.getStringExtra("lng"));
+                latlng.setText(data.getStringExtra("lat") + ", " + data.getStringExtra("lng"));
             }
         }
     }
@@ -104,9 +113,41 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
                 break;
             case R.id.saveNow:
                 Helper.hideSoftKeyboard(this);
+                cv.put("name", name.getText().toString());
+                cv.put("company", company.getText().toString());
+                cv.put("contact", contact.getText().toString());
+                cv.put("email", email.getText().toString());
+                cv.put("location", location.getText().toString());
+                cv.put("price", price.getText().toString());
+                cv.put("latlng", "(" + latlng.getText().toString() + ")");
+                String p = String.valueOf(saveNow.getTag());
+                String add;
+                if (p.equals("1")) {
+                    // update
+                    cv.put("id_marker", name.getTag().toString());
+                    add = "updateMarker";
+                } else {
+                    // save
+                    cv.put("id_marker", Helper.nownow());
+                    add = "saveMarker";
+                }
+                new Post(this, Helper.url + "marker/" + add, cv).execute();
                 break;
             default:
                 break;
+        }
+    }
+
+    private class Post extends Curl {
+
+        public Post(Context context, String url, ContentValues cv) {
+            super(context, url, cv);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            pg.dismiss();
+            finish();
         }
     }
 }

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import com.melnykov.fab.FloatingActionButton;
+import com.melnykov.fab.ScrollDirectionListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,10 +68,24 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         cv = new ContentValues();
         cv.put("beo", "038");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToRecyclerView(recyclerView, new ScrollDirectionListener() {
+
+            @Override
+            public void onScrollDown() {
+                fab.show();
+            }
+
+            @Override
+            public void onScrollUp() {
+                fab.hide();
+            }
+        });
         fab.setOnClickListener(this);
 
         loadData();
+
+        Helper.setSP(this, "key", "U4gaYcqow6tHSCfqAu5O6x8CHz3Cy2XqwmfVpRMszOsgfTWAgczHEAhsuQJgXLXCzYMUwDlrxVSULQqzh1KvmQ==");
     }
 
     @Override
@@ -120,7 +136,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     private void loadData() {
         pageCurrent++;
         int p = pageCurrent + 1;
-        new json(this, "http://nadhif.pe.hu/json/list_item/" + p, cv).execute();
+        new json(this, Helper.url + "json/list_item/" + p, cv).execute();
     }
 
     @Override
@@ -174,7 +190,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                         for (int i = 0; i < college.length(); i++) {
                             JSONObject c = college.getJSONObject(i);
                             datas.add(new Data(
-                                            c.getString("id").toString(),
+                                            c.getString("id_marker").toString(),
                                             c.getString("name").toString(),
                                             c.getString("company").toString(),
                                             c.getString("contact").toString(),
