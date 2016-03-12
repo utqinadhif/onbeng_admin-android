@@ -38,6 +38,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     int pageTotal = 0;
     boolean refresh = false;
     boolean first = true;
+    boolean yes = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +83,31 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
             }
         });
         fab.setOnClickListener(this);
+    }
 
-        loadData();
+    private void checklogin() {
+        if (Helper.getSP(this, "session") != null) {
+            if (Integer.parseInt(Helper.getSP(this, "session")) > (int) Helper.times()) {
+                yes = true;
+                Helper.setSP(this, "session", (int) Helper.times() + 180000);
+            } else {
+                Helper.toast(this, "System auto log out in 3 minute if no activity.");
+                yes = false;
+            }
+        }
 
-        if(Helper.getSP(this, "key")==null){
+        if (Helper.getSP(this, "key") == null || !yes) {
             startActivity(new Intent(getApplicationContext(), Login.class));
             this.finish();
+        } else {
+            loadData();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checklogin();
     }
 
     @Override
@@ -197,10 +216,10 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            progressBar.setVisibility(View.GONE);
             try {
                 JSONObject json = new JSONObject(s);
                 if (json.getString("ok").equals("1")) {
-                    progressBar.setVisibility(View.GONE);
                     if (refresh || first) {
                         datas.clear();
                         adapter.notifyDataSetChanged();

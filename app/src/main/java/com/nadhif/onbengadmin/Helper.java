@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by nadhif on 28/02/2016.
@@ -40,8 +41,16 @@ public class Helper {
         editor.commit();
     }
 
+    public static void setSP(Activity activity, String key, int content) {
+        setSP(activity, key, String.valueOf(content));
+    }
+
     public static String getSP(Activity activity, String key) {
         SharedPreferences sp = activity.getSharedPreferences("general", Context.MODE_PRIVATE);
         return sp.getString(key, null);
+    }
+
+    public static long times() {
+        return new Date().getTime();
     }
 }
