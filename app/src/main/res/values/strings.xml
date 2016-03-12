@@ -5,6 +5,7 @@
     <string name="vibrate">Vibrate</string>
     <string name="title_activity_form">Form</string>
     <string name="title_activity_pick">Pick</string>
+    <string name="title_activity_login">Login</string>
     <string name="bengkel_name">Bengkel Name</string>
     <string name="bengkel_company">Bengkel Company</string>
     <string name="bengkel_contact">Bengkel Contact</string>

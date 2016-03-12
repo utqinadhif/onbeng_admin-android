@@ -85,13 +85,32 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
 
         loadData();
 
-        Helper.setSP(this, "key", "U4gaYcqow6tHSCfqAu5O6x8CHz3Cy2XqwmfVpRMszOsgfTWAgczHEAhsuQJgXLXCzYMUwDlrxVSULQqzh1KvmQ==");
+        if(Helper.getSP(this, "key")==null){
+            startActivity(new Intent(getApplicationContext(), Login.class));
+            this.finish();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
-        menu.findItem(R.id.sound).setChecked(true);
+        String sound = Helper.getSP(this, "sound");
+        if (sound != null) {
+            if (sound.equals("1")) {
+                menu.findItem(R.id.sound).setChecked(true);
+            } else {
+                menu.findItem(R.id.sound).setChecked(false);
+            }
+        }
+
+        String vibrate = Helper.getSP(this, "vibrate");
+        if (vibrate != null) {
+            if (vibrate.equals("1")) {
+                menu.findItem(R.id.vibrate).setChecked(true);
+            } else {
+                menu.findItem(R.id.vibrate).setChecked(false);
+            }
+        }
         return true;
     }
 
@@ -101,18 +120,23 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
             case R.id.sound:
                 if (item.isChecked()) {
                     item.setChecked(false);
+                    Helper.setSP(this, "sound", "0");
                 } else {
                     item.setChecked(true);
+                    Helper.setSP(this, "sound", "1");
                 }
                 break;
             case R.id.vibrate:
                 if (item.isChecked()) {
                     item.setChecked(false);
+                    Helper.setSP(this, "vibrate", "0");
                 } else {
                     item.setChecked(true);
+                    Helper.setSP(this, "vibrate", "1");
                 }
                 break;
             case R.id.exit:
+                Helper.setSP(this, "key", null);
                 finish();
                 System.exit(0);
                 break;
