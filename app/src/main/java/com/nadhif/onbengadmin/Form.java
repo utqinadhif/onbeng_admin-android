@@ -1,7 +1,9 @@
 package com.nadhif.onbengadmin;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -25,6 +28,8 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     Intent intent, intents;
     ContentValues cv;
     String p;
+    int position;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,9 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
 
         scroll_form = (ScrollView) findViewById(R.id.scroll_form);
         scroll_form.setOnClickListener(this);
@@ -72,6 +80,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
             latlng.setText(intent.getStringExtra("lat") + ", " + intent.getStringExtra("lng"));
             latlng.setTag(R.string.pick_off, intent.getStringExtra("lat"));
             latlng.setTag(R.string.pick_on, intent.getStringExtra("lng"));
+            position = intent.getIntExtra("position", 0);
             saveNow.setText("Update Now");
             saveNow.setTag(1);
         } else {
@@ -83,17 +92,36 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         p = String.valueOf(saveNow.getTag());
     }
 
+    private void searchLocation() {
+        try {
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(this);
+            startActivityForResult(intent, 2);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+
+    }
+
+    private void addData() {
+        Helper.hideSoftKeyboard(this);
+        intents = new Intent(this, Pick.class);
+        intents.putExtra("name", intent.getStringExtra("name"));
+        startActivityForResult(intents, 1);
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem menuItem = menu.findItem(R.id.delete);
-        if(p.equals("1")){
+        if (p.equals("1")) {
 //            update
             menuItem.setVisible(true);
-        }else{
+        } else {
 //            save
             menuItem.setVisible(false);
         }
-        return  true;
+        return true;
     }
 
     @Override
@@ -106,8 +134,22 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                cv.put("id_marker", name.getTag().toString());
-                new Post(this, Helper.url + "marker/deleteMarker", cv).execute();
+                Helper.hideSoftKeyboard(this);
+                new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Confirmation")
+                        .setMessage("Are you sure to delete this data?")
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                p = "3";
+                                cv.put("id_marker", name.getTag().toString());
+                                new Post(getApplicationContext(), Helper.url + "marker/deleteMarker", cv).execute();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .create()
+                        .show();
                 break;
             case android.R.id.home:
                 onBackPressed();
@@ -140,27 +182,6 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         } else if (v == location && hasFocus) {
             searchLocation();
         }
-    }
-
-    private void searchLocation() {
-        try {
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                            .build(this);
-            startActivityForResult(intent, 2);
-        } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
-        } catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
-        }
-
-    }
-
-    private void addData() {
-        Helper.hideSoftKeyboard(this);
-        intents = new Intent(this, Pick.class);
-        intents.putExtra("name", intent.getStringExtra("name"));
-        startActivityForResult(intents, 1);
     }
 
     @Override
@@ -205,20 +226,40 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
         }
 
         @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected void onPostExecute(String s) {
-            pg.dismiss();
             if (p.equals("1")) {
                 // update
-//                Holder.name.setText(name.getText().toString());
-//                Holder.company.setText(company.getText().toString());
-//                Holder.contact.setText(contact.getText().toString());
-//                Holder.email.setText(email.getText().toString());
-//                Holder.location.setText(location.getText().toString());
-//                Holder.price.setText(price.getText().toString());
-//                Holder.latlng.setText(latlng.getText().toString());
-            } else {
+                Home.datas.get(position).setBengkel_name(name.getText().toString());
+                Home.datas.get(position).setBengkel_company(company.getText().toString());
+                Home.datas.get(position).setContact(contact.getText().toString());
+                Home.datas.get(position).setEmail(email.getText().toString());
+                Home.datas.get(position).setLocation(location.getText().toString());
+                Home.datas.get(position).setPrice_per_km(price.getText().toString());
+                Home.datas.get(position).setLat(latlng.getTag(R.string.pick_off).toString());
+                Home.datas.get(position).setLng(latlng.getTag(R.string.pick_on).toString());
+            } else if (p.equals("2")) {
                 // save
-
+                Home.datas.add(0, new Data(
+                                Helper.nownow(),
+                                name.getText().toString(),
+                                company.getText().toString(),
+                                contact.getText().toString(),
+                                email.getText().toString(),
+                                location.getText().toString(),
+                                price.getText().toString(),
+                                latlng.getTag(R.string.pick_off).toString(),
+                                latlng.getTag(R.string.pick_on).toString()
+                        )
+                );
+                Home.adapter.notifyItemInserted(0);
+            } else {
+                Home.datas.remove(position);
+                Home.adapter.notifyItemRemoved(position);
             }
             finish();
         }

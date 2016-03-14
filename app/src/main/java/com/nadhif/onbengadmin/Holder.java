@@ -1,14 +1,9 @@
 package com.nadhif.onbengadmin;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
-
-import java.io.Serializable;
 
 /**
  * Created by nadhif on 06/03/2016.
@@ -17,6 +12,7 @@ public class Holder extends RecyclerView.ViewHolder implements View.OnClickListe
     public TextView name, company, contact, email, location, price, latlng;
     public Data data;
     View view;
+    int position;
 
     public Holder(View view) {
         super(view);
@@ -46,6 +42,7 @@ public class Holder extends RecyclerView.ViewHolder implements View.OnClickListe
             intent.putExtra("price", price.getText().toString());
             intent.putExtra("lat", latlng.getTag(R.string.pick_off).toString());
             intent.putExtra("lng", latlng.getTag(R.string.pick_on).toString());
+            intent.putExtra("position", position);
             view.getContext().startActivity(intent);
         }
     }

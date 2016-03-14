@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.melnykov.fab.FloatingActionButton;
@@ -25,13 +26,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Home extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, OnLoadMoreListener {
-    Adapter adapter;
+    static Adapter adapter;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     SwipeRefreshLayout swiper;
     ProgressBar progressBar;
+    LinearLayout no_data;
 
-    ArrayList<Data> datas = new ArrayList<>();
+    static ArrayList<Data> datas = new ArrayList<>();
     ContentValues cv;
     int pageCurrent = -1;
     int pageFetch = -1;
@@ -39,6 +41,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     boolean refresh = false;
     boolean first = true;
     boolean yes = false;
+    boolean oc = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
         progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
 
+        no_data = (LinearLayout) findViewById(R.id.no_data);
+
         cv = new ContentValues();
         cv.put("beo", "038");
 
@@ -83,9 +88,16 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
             }
         });
         fab.setOnClickListener(this);
+        loadData();
     }
 
-    private void checklogin() {
+    private void loadData() {
+        pageCurrent++;
+        int p = pageCurrent + 1;
+        new json(this, Helper.url + "json/list_item/" + p, cv).execute();
+    }
+
+    private void checkLogin() {
         if (Helper.getSP(this, "session") != null) {
             if (Integer.parseInt(Helper.getSP(this, "session")) > (int) Helper.times()) {
                 yes = true;
@@ -99,15 +111,24 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         if (Helper.getSP(this, "key") == null || !yes) {
             startActivity(new Intent(getApplicationContext(), Login.class));
             this.finish();
-        } else {
-            loadData();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Helper.returnExit(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checklogin();
+        checkLogin();
+        adapter.notifyDataSetChanged();
+        if (datas.size() > 0) {
+            no_data.setVisibility(View.GONE);
+        } else {
+            no_data.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -176,12 +197,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         }
     }
 
-    private void loadData() {
-        pageCurrent++;
-        int p = pageCurrent + 1;
-        new json(this, Helper.url + "json/list_item/" + p, cv).execute();
-    }
-
     @Override
     public void onRefresh() {
         refresh = true;
@@ -208,7 +223,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                 swiper.setVisibility(View.VISIBLE);
             }
             swiper.setRefreshing(true);
-            if (first) {
+            if (oc) {
                 progressBar.setVisibility(View.VISIBLE);
             }
         }
@@ -217,6 +232,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             progressBar.setVisibility(View.GONE);
+            swiper.setRefreshing(false);
+            oc = false;
             try {
                 JSONObject json = new JSONObject(s);
                 if (json.getString("ok").equals("1")) {
@@ -229,7 +246,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                     JSONObject result = json.getJSONObject("result");
                     JSONArray college = result.getJSONArray("list");
                     if (college.length() > 0) {
-//                       no_data.setVisibility(View.GONE);
+                        no_data.setVisibility(View.GONE);
                         for (int i = 0; i < college.length(); i++) {
                             JSONObject c = college.getJSONObject(i);
                             datas.add(new Data(
@@ -248,9 +265,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                         }
                         pageTotal = result.getInt("total_page") - 1;
                         pageFetch = pageCurrent;
-                        swiper.setRefreshing(false);
                     } else {
-//                       no_data.setVisibility(View.VISIBLE);
+                        no_data.setVisibility(View.VISIBLE);
                     }
                 }
             } catch (JSONException e) {

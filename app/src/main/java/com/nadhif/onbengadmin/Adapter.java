@@ -75,6 +75,7 @@ public class Adapter extends RecyclerView.Adapter {
             ((Holder) holder).latlng.setTag(R.string.pick_off, data.getLat());
             ((Holder) holder).latlng.setTag(R.string.pick_on, data.getLng());
             ((Holder) holder).data = data;
+            ((Holder) holder).position = position;
         }
     }
 

@@ -44,9 +44,15 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
     @Override
+    public void onBackPressed() {
+        Helper.returnExit(this);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.l:
+                Helper.hideSoftKeyboard(this);
                 cv.put("user", u.getText().toString());
                 cv.put("pass", p.getText().toString());
                 new Login_(this, Helper.url + "main/login/json", cv).execute();

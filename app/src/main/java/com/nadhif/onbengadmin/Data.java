@@ -6,6 +6,38 @@ package com.nadhif.onbengadmin;
 public class Data {
     String id_marker, bengkel_name, bengkel_company, contact, email, location, price_per_km, lat, lng;
 
+    public void setBengkel_name(String bengkel_name) {
+        this.bengkel_name = bengkel_name;
+    }
+
+    public void setBengkel_company(String bengkel_company) {
+        this.bengkel_company = bengkel_company;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setPrice_per_km(String price_per_km) {
+        this.price_per_km = price_per_km;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
     public Data(String id_marker, String bengkel_name, String bengkel_company, String contact, String email, String location, String price_per_km, String lat, String lng) {
         this.id_marker = id_marker;
         this.bengkel_name = bengkel_name;

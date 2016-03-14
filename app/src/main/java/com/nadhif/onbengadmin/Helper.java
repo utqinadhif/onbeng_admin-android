@@ -1,7 +1,9 @@
 package com.nadhif.onbengadmin;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -52,5 +54,25 @@ public class Helper {
 
     public static long times() {
         return new Date().getTime();
+    }
+
+    public static void returnExit(final Context context) {
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Confirmation")
+                .setMessage("Are you sure to exit from application?")
+                .setPositiveButton("Yes, I'm Sure", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Stop the activity
+                        ((Activity) context).finish();
+                        System.exit(0);
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
     }
 }
