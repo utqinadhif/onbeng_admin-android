@@ -82,7 +82,7 @@
                             android:background="@drawable/bg"
                             android:padding="@dimen/fourZero"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/image" />
+                            android:src="@drawable/no_pick" />
 
                         <TextView
                             android:id="@+id/status"

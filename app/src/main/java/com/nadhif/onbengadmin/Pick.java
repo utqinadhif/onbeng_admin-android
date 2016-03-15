@@ -147,6 +147,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
             }
             setText(location.getLatitude(), location.getLongitude());
             if (start) {
+                pick.setImageResource(R.drawable.image);
                 pick.setClickable(true);
                 status.setText("Pick Now");
                 start = false;
