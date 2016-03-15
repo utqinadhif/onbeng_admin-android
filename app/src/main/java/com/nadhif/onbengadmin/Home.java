@@ -97,23 +97,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
         new json(this, Helper.url + "json/list_item/" + p, cv).execute();
     }
 
-    private void checkLogin() {
-        if (Helper.getSP(this, "session") != null) {
-            if (Integer.parseInt(Helper.getSP(this, "session")) > (int) Helper.times()) {
-                yes = true;
-                Helper.setSP(this, "session", (int) Helper.times() + 180000);
-            } else {
-                Helper.toast(this, "System auto log out in 3 minute if no activity.");
-                yes = false;
-            }
-        }
-
-        if (Helper.getSP(this, "key") == null || !yes) {
-            startActivity(new Intent(getApplicationContext(), Login.class));
-            this.finish();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         Helper.returnExit(this);
@@ -122,7 +105,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     @Override
     protected void onResume() {
         super.onResume();
-        checkLogin();
+        Helper.checkLogin(this);
         adapter.notifyDataSetChanged();
         if (datas.size() > 0) {
             no_data.setVisibility(View.GONE);

@@ -21,7 +21,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
     TextView latlng, status;
     Vibrator vibrator;
     ExGps exgps;
-    boolean start;
+    boolean start, issound, isvibrate;
     Location lc;
     Uri uri;
     Ringtone ringtone;
@@ -59,6 +59,20 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
             ringtone = RingtoneManager.getRingtone(this, uri);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        String sound = Helper.getSP(this, "sound");
+        if (sound != null) {
+            if (sound.equals("1")) {
+                issound = true;
+            }
+        }
+
+        String vibrate = Helper.getSP(this, "vibrate");
+        if (vibrate != null) {
+            if (vibrate.equals("1")) {
+                isvibrate = true;
+            }
         }
     }
 
@@ -123,9 +137,14 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
 
         @Override
         public void onLocationChanged(Location location) {
+            Helper.checkLogin(context);
             lc = location;
-            vibrator.vibrate(100);
-            ringtone.play();
+            if (isvibrate) {
+                vibrator.vibrate(100);
+            }
+            if (issound) {
+                ringtone.play();
+            }
             setText(location.getLatitude(), location.getLongitude());
             if (start) {
                 pick.setClickable(true);

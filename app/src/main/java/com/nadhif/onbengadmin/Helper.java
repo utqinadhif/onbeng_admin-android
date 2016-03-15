@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -54,6 +55,24 @@ public class Helper {
 
     public static long times() {
         return new Date().getTime();
+    }
+
+    public static void checkLogin(Context context) {
+        Boolean yes = false;
+        if (Helper.getSP((Activity) context, "session") != null) {
+            if (Integer.parseInt(Helper.getSP((Activity) context, "session")) > (int) Helper.times()) {
+                yes = true;
+                Helper.setSP((Activity) context, "session", (int) Helper.times() + 180000);
+            } else {
+                Helper.toast((Activity) context, "System auto log out in 3 minute if no activity.");
+                yes = false;
+            }
+        }
+
+        if (Helper.getSP((Activity) context, "key") == null || !yes) {
+            ((Activity) context).startActivity(new Intent(context, Login.class));
+            ((Activity) context).finish();
+        }
     }
 
     public static void returnExit(final Context context) {

@@ -27,7 +27,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     EditText name, company, contact, email, location, price, latlng;
     Intent intent, intents;
     ContentValues cv;
-    String p;
+    String p, nownow;
     int position;
     ProgressBar progressBar;
 
@@ -194,6 +194,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
                 searchLocation();
                 break;
             case R.id.saveNow:
+                Helper.checkLogin(this);
                 Helper.hideSoftKeyboard(this);
                 cv.put("name", name.getText().toString());
                 cv.put("company", company.getText().toString());
@@ -209,7 +210,8 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
                     add = "updateMarker";
                 } else {
                     // save
-                    cv.put("id_marker", Helper.nownow());
+                    nownow = Helper.nownow();
+                    cv.put("id_marker", nownow);
                     add = "saveMarker";
                 }
                 new Post(this, Helper.url + "marker/" + add, cv).execute();
@@ -245,7 +247,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
             } else if (p.equals("2")) {
                 // save
                 Home.datas.add(0, new Data(
-                                Helper.nownow(),
+                                nownow,
                                 name.getText().toString(),
                                 company.getText().toString(),
                                 contact.getText().toString(),
