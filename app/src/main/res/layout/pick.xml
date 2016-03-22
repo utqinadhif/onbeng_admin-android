@@ -79,7 +79,7 @@
                             android:layout_height="150dp"
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/five"
-                            android:background="@drawable/bg"
+                            android:background="@drawable/bg_inactive"
                             android:padding="@dimen/fourZero"
                             android:scaleType="centerCrop"
                             android:src="@drawable/no_pick" />

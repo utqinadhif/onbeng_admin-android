@@ -83,11 +83,15 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    private void setText(double lt, double lg) {
+        latlng.setText(String.valueOf(lt) + "," + String.valueOf(lg));
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-
         this.cekGps();
+        Helper.checkLogin(this);
     }
 
     @Override
@@ -110,6 +114,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.pick:
+                Helper.checkLogin(this);
                 exgps.stopUsingGPS();
                 Intent rIntent = new Intent();
                 rIntent.putExtra("lat", String.valueOf(lc.getLatitude()));
@@ -123,10 +128,6 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    protected void setText(double lt, double lg) {
-        latlng.setText(String.valueOf(lt) + "," + String.valueOf(lg));
-    }
-
     private class ExGps extends Gps {
         Context context;
 
@@ -137,7 +138,9 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
 
         @Override
         public void onLocationChanged(Location location) {
-            Helper.checkLogin(context);
+            if (Helper.checkLogin(context, true)) {
+                exgps.stopUsingGPS();
+            }
             lc = location;
             if (isvibrate) {
                 vibrator.vibrate(100);
@@ -148,6 +151,7 @@ public class Pick extends AppCompatActivity implements View.OnClickListener {
             setText(location.getLatitude(), location.getLongitude());
             if (start) {
                 pick.setImageResource(R.drawable.image);
+                pick.setBackgroundResource(R.drawable.bg);
                 pick.setClickable(true);
                 status.setText("Pick Now");
                 start = false;

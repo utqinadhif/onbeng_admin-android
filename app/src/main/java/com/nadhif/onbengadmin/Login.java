@@ -84,7 +84,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 JSONObject json = new JSONObject(s);
                 if (json.getString("ok").equals("1")) {
                     Helper.setSP((Activity) context, "key", json.getString("token"));
-                    Helper.setSP((Activity) context, "session", (int) Helper.times() + 180000);
+                    Helper.setSP((Activity) context, "session", (int) Helper.times() + 300000);
                     startActivity(new Intent(context, Home.class));
                     finish();
                 } else {

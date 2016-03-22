@@ -19,7 +19,7 @@
         android:padding="@dimen/five"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -27,20 +27,21 @@
             <LinearLayout
                 android:id="@+id/no_data"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center|center_vertical"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@android:drawable/ic_dialog_alert" />
 
                 <TextView
+                    android:textSize="25dp"
+                    android:text="No data"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No data" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <android.support.v4.widget.SwipeRefreshLayout
@@ -55,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:scrollbars="vertical" />
             </android.support.v4.widget.SwipeRefreshLayout>
-        </LinearLayout>
+        </FrameLayout>
     </ScrollView>
 
     <com.melnykov.fab.FloatingActionButton

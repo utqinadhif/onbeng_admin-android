@@ -93,6 +93,7 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
     }
 
     private void searchLocation() {
+        Helper.checkLogin(this);
         try {
             Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(this);
             startActivityForResult(intent, 2);
@@ -106,9 +107,16 @@ public class Form extends AppCompatActivity implements View.OnFocusChangeListene
 
     private void addData() {
         Helper.hideSoftKeyboard(this);
+        Helper.checkLogin(this);
         intents = new Intent(this, Pick.class);
         intents.putExtra("name", intent.getStringExtra("name"));
         startActivityForResult(intents, 1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Helper.checkLogin(this);
     }
 
     @Override

@@ -92,6 +92,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
     }
 
     private void loadData() {
+        Helper.checkLogin(this);
         pageCurrent++;
         int p = pageCurrent + 1;
         new json(this, Helper.url + "json/list_item/" + p, cv).execute();
@@ -159,9 +160,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Swi
                 }
                 break;
             case R.id.exit:
-                Helper.setSP(this, "key", null);
-                finish();
-                System.exit(0);
+                Helper.returnExitLogout(this);
                 break;
             default:
                 break;

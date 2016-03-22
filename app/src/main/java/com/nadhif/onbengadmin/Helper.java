@@ -57,22 +57,35 @@ public class Helper {
         return new Date().getTime();
     }
 
-    public static void checkLogin(Context context) {
-        Boolean yes = false;
+    public static boolean checkLogin(Context context, boolean check) {
+        boolean yes = false;
+        boolean a = false;
         if (Helper.getSP((Activity) context, "session") != null) {
             if (Integer.parseInt(Helper.getSP((Activity) context, "session")) > (int) Helper.times()) {
                 yes = true;
-                Helper.setSP((Activity) context, "session", (int) Helper.times() + 180000);
+                Helper.setSP((Activity) context, "session", (int) Helper.times() + 300000);
             } else {
-                Helper.toast((Activity) context, "System auto log out in 3 minute if no activity.");
+                Helper.toast(context, "System auto log out in 3 minute if no activity.");
                 yes = false;
             }
         }
 
         if (Helper.getSP((Activity) context, "key") == null || !yes) {
-            ((Activity) context).startActivity(new Intent(context, Login.class));
+            Intent intent = new Intent(context, Login.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(intent);
             ((Activity) context).finish();
+            if (check) {
+                a = true;
+            } else {
+                a = false;
+            }
         }
+        return a;
+    }
+
+    public static void checkLogin(Context context) {
+        checkLogin(context, false);
     }
 
     public static void returnExit(final Context context) {
@@ -85,6 +98,27 @@ public class Helper {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //Stop the activity
+                        ((Activity) context).finish();
+                        System.exit(0);
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
+    }
+
+    public static void returnExitLogout(final Context context) {
+        new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Confirmation")
+                .setMessage("Are you sure to exit and logout from application?")
+                .setPositiveButton("Yes, I'm Sure", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Stop the activity
+                        Helper.setSP(((Activity) context), "key", null);
                         ((Activity) context).finish();
                         System.exit(0);
                     }
